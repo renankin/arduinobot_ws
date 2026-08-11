@@ -21,8 +21,12 @@ def generate_launch_description():
         description="Absolute path to the robot URDF file"
     )
 
+    ros_distro = os.environ["ROS_DISTRO"]
+    is_ignition = "True" if ros_distro == "humble" else "False"
+
     robot_description = ParameterValue(
-        Command(["xacro ", LaunchConfiguration("model")])
+        Command(["xacro ", LaunchConfiguration("model"), " is_ignition:=", is_ignition]),
+        value_type=str
     )
 
     robot_state_publisher_node = Node(
@@ -39,7 +43,7 @@ def generate_launch_description():
         ]
     )
 
-    ros_distro = os.environ["ROS_DISTRO"]
+    
     physics_engine = "" if ros_distro == "humble" else "--physics-engine gz-physics-bullet-featherstone-plugin"
 
     gazebo = IncludeLaunchDescription(
